@@ -4,6 +4,7 @@ import datetime as dt
 class Record:
     def __init__(self, amount, comment, date=''):
         self.amount = amount
+        # "not" лучше перенести на верхнюю строчку. Это повысит читаемость кода.
         self.date = (
             dt.datetime.now().date() if
             not
@@ -19,13 +20,22 @@ class Calculator:
     def add_record(self, record):
         self.records.append(record)
 
+    # Лучше сделать class метод, потому что используется только внутренние аргументы. Посмотри пожалуйста видео:
+    # https://www.youtube.com/watch?v=rZY9CJn1y2E
     def get_today_stats(self):
         today_stats = 0
+        # Не стоит называть переменную в python c большой буквой. Это не соответствует стандарту pep-8. Вот подробная
+        # статья про это: https://clck.ru/324oix
         for Record in self.records:
+            # вынести "dt.datetime.now().date()" за цикл. Вдруг во время выполнение программы поменяется дата. Надо
+            # сделать как в ~40 строчке.
             if Record.date == dt.datetime.now().date():
+                # Лучше использовать today_stats += Record.amount. Так меньше кода используется и не ухудшается
+                # читабельность кода
                 today_stats = today_stats + Record.amount
         return today_stats
 
+    # и это тоже лучше сделать class метод
     def get_week_stats(self):
         week_stats = 0
         today = dt.datetime.now().date()
@@ -39,6 +49,9 @@ class Calculator:
 
 
 class CaloriesCalculator(Calculator):
+    # Сlass method как в 23 строчке
+    # Комментарий спустить вниз и написать так docstring. Статья про это:
+    # https://dvmn.org/encyclopedia/qna/13/chto-takoe-docstring-s-chem-ego-edjat/
     def get_calories_remained(self):  # Получает остаток калорий на сегодня
         x = self.limit - self.get_today_stats()
         if x > 0:
@@ -49,9 +62,12 @@ class CaloriesCalculator(Calculator):
 
 
 class CashCalculator(Calculator):
+    # Здесь лучше создать новый метод, который будет реализовать парсинг курсов валют, потому что курс доллара и курс
+    # евро могут меняться. На данном курсе это неважно поэтому в новом методе можно просто объявить и вернуть константу
     USD_RATE = float(60)  # Курс доллар США.
     EURO_RATE = float(70)  # Курс Евро.
 
+    # Не стоит называть аргументы с большой буквой, как и переменные. Об этом мы с тобой читали в 28 строчке.
     def get_today_cash_remained(self, currency,
                                 USD_RATE=USD_RATE, EURO_RATE=EURO_RATE):
         currency_type = currency
